@@ -147,7 +147,7 @@ spec:
             # clients never reach a game server directly, since the token they present is
             # realm-global and only the gateway can translate it to the engine's game id.
             - name: REALMD_GAME_ADDR
-              value: "127.0.0.1"
+              value: "192.168.0.15"
             # Persistence: durable chars in Postgres, ephemeral sessions/games in Redis.
             - name: REALMD_REDIS_ADDR
               value: "realmd-redis:6379"
