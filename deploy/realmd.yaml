@@ -138,7 +138,7 @@ spec:
               valueFrom:
                 fieldRef: { fieldPath: metadata.name }   # unique per pod (session-id high bits)
             - name: REALMD_REALM_NAME
-              value: "TypeGuru"
+              value: "D2VP-QoL"
             # Public IPv4 clients dial for d2cs (bnetd advertises it). Set to the realm's
             # external LoadBalancer IP.
             - name: REALMD_REALM_ADDR

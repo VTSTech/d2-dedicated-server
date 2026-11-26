@@ -68,3 +68,4 @@ probegame/
 
 # a data dir named "=<port>" means something leaked an env assignment into a path
 /=*
+*.bak
