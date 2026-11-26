@@ -588,8 +588,13 @@ fn holdOne(s: *Slot) void {
     // the count went 1, then 0, and the game was gone before the client it existed for had
     // finished connecting. So a real player is one this server has answered a GAMELOGON for.
     if (clients.* != 0) {
-        if (s.phase == .waiting and s.join_resolved) s.phase = .played;
+        if (s.phase == .waiting and s.join_resolved) {
+            s.phase = .played;
+            note("d2gs-native: game {d} ENTERED the world (join_resolved was set) clients={d}\n", .{ s.join_id, clients.* });
+        }
         if (s.phase != .waiting) return;
+    } else if (s.phase == .waiting) {
+        note("d2gs-native: game {d} still waiting clients={d} join_resolved={}\n", .{ s.join_id, clients.*, s.join_resolved });
     }
     switch (s.phase) {
         .played => {
@@ -727,7 +732,7 @@ fn thread() void {
             // ignoring — which is a much harder thing to go and look for.
             if (!complained) {
                 complained = true;
-                note("d2gs-native: cannot reach the realm store — retrying\n", .{});
+                note("d2gs-native: cannot reach the realm store — retrying ({s})\n", .{store.lastError()});
             }
             _ = usleep(2_000_000);
             continue;

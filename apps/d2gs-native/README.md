@@ -21,6 +21,38 @@ image above 4 GiB the binds and rebases cannot be written and are skipped.
 Without `--dry-run` it jumps to the image entry point, and refuses to do so unless the host is
 i386 Linux.
 
+## Running on arm64 (Raspberry Pi)
+
+The engine is Diablo II's macOS i386 build, so the host has to be i386 Linux to run it — the refusal
+above is the boundary, not a preference. On arm64 hardware (a Raspberry Pi, an arm64 Mac, Graviton)
+that host is user-mode emulation: run the i386 binary under `qemu-i386`. That is the same path the
+arm64 Mac already used for its native-vs-wine numbers (see `docs/PERFORMANCE.md`), and the engine
+image itself is unchanged.
+
+On the Pi:
+
+    sudo apt-get install qemu-user-static
+    sudo systemctl restart systemd-binfmt        # or: sudo update-binfmts --install
+
+    docker run --rm --platform linux/amd64 \
+      -e D2GS_REDIS_ADDR=<redis host:port> \
+      -e D2GS_GS_ADDR=127.0.0.1:4000 \
+      -v <store> -v <pg> \
+      d2gs-native:<tag> /game/DiabloII_macho
+
+or invoke the binary under `qemu-i386` directly with the same environment. With no realm reachable
+the server still boots — it just does not join one.
+
+To cross-compile the host for arm64 instead, point both Dockerfile knobs at arm64:
+
+    docker build -f deploy/Dockerfile --target gs-native \
+      --build-arg GS_NATIVE_PLATFORM=linux/arm64 \
+      --build-arg GS_NATIVE_TARGET=aarch64-linux-musl \
+      -t d2gs-native:arm64 .
+
+`GS_NATIVE_PLATFORM` selects the runtime image and `GS_NATIVE_TARGET` the zigbuild `-Dtarget`; both
+default to the amd64 deploy shape above, which is what CI and the local stack build.
+
 ## Joining a realm
 
 The server takes no flags beyond the image path — everything else is environment, so a container

@@ -30,6 +30,15 @@ var configured = false;
 var fd: c_int = -1;
 var busy = std.atomic.Value(bool).init(false);
 var rx: [16384]u8 = undefined;
+/// Why the last store operation gave up. The realm thread logs this beside its retry line, so an
+/// outage reads as a reason (dial refused, send, reply) instead of as an unexplained boolean.
+var last_err: []const u8 = "";
+fn fail(what: []const u8) void {
+    last_err = what;
+}
+pub fn lastError() []const u8 {
+    return last_err;
+}
 
 pub fn configure(ip: [4]u8, p: u16) void {
     host = ip;
@@ -56,12 +65,19 @@ fn drop() void {
 
 fn ensure() ?c_int {
     if (fd >= 0) return fd;
-    if (!configured) return null;
+    if (!configured) {
+        fail("not-configured");
+        return null;
+    }
     const s = socket(2, 1, 0); // AF_INET, SOCK_STREAM
-    if (s < 0) return null;
+    if (s < 0) {
+        fail("socket-failed");
+        return null;
+    }
     const sa = sockaddr_in{ .port = std.mem.nativeToBig(u16, port), .addr = host };
     if (connect(s, &sa, @sizeOf(sockaddr_in)) != 0) {
         _ = close(s);
+        fail("connect-refused");
         return null;
     }
     fd = s;
@@ -72,7 +88,10 @@ fn sendAll(s: c_int, bytes: []const u8) bool {
     var off: usize = 0;
     while (off < bytes.len) {
         const n = send(s, bytes.ptr + off, bytes.len - off, 0);
-        if (n <= 0) return false;
+        if (n <= 0) {
+            fail("send");
+            return false;
+        }
         off += @intCast(n);
     }
     return true;
@@ -85,16 +104,19 @@ fn readReply(s: c_int) ?resp.Reply {
             .ok => |o| return o.reply,
             .invalid => {
                 drop();
+                fail("reply-framing-invalid");
                 return null;
             },
             .need_more => {
                 if (fill == rx.len) {
                     drop(); // a reply we cannot resynchronise after
+                    fail("reply-overflow");
                     return null;
                 }
                 const n = recv(s, rx[fill..].ptr, rx.len - fill, 0);
                 if (n <= 0) {
                     drop();
+                    fail("reply-io");
                     return null;
                 }
                 fill += @intCast(n);
@@ -110,12 +132,23 @@ pub fn cmd(args: []const []const u8) ?resp.Reply {
     defer unlock();
     const s = ensure() orelse return null;
     var tx: [1024]u8 = undefined;
-    const wire = resp.encode(&tx, args) orelse return null;
+    const wire = resp.encode(&tx, args) orelse {
+        fail("encode");
+        return null;
+    };
     if (!sendAll(s, wire)) {
         drop();
         return null;
     }
-    return readReply(s);
+    const r = readReply(s) orelse {
+        fail("read-reply");
+        return null;
+    };
+    if (r != .status and r != .int and r != .bulk and r != .array_len and r != .err) {
+        fail("reply-type");
+        return null;
+    }
+    return r;
 }
 
 /// Same, but the LAST argument may be arbitrarily large — a .d2s save or a control packet is
@@ -148,7 +181,10 @@ pub fn ping() bool {
     const r = cmd(&.{"PING"}) orelse return false;
     return switch (r) {
         .status => true,
-        else => false,
+        else => {
+            fail("ping-reply-type");
+            return false;
+        },
     };
 }
 

@@ -47,8 +47,15 @@ services:
       # token they carry is realm-global and only an edge can translate it.
       REALMD_GAME_PORT: "4000"
       REALMD_GAME_ADDR: "127.0.0.1"
+      # Which client builds this realm speaks for. The built-in map only names the one exe
+      # build this repo could source (1.14.3.71 -> "1.14d"); a D2VP client reports its patch
+      # family as a version byte (vb:14) and nothing else, so without this line every such client
+      # resolves to no engine at all — the logon still goes through, but the character a client
+      # makes comes back with an empty engine and the version check / char list / create path all
+      # stall on exactly that. Map the era this realm actually serves.
+      REALMD_CLIENT_VERSIONS: "vb:14=1.14d"
     volumes:
-      - realmd-data:/data
+      - ./apps/realmd/assets/bnftp:/data/bnftp
     ports:
       - "6112:6112"  # bnetd
       - "4000:4000"  # game traffic (the embedded edge; clients dial this)

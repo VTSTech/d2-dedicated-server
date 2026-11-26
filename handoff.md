@@ -219,4 +219,26 @@ GS image; e2e green twice in a row, world-entry now confirmed (`ENTERED the worl
 **`NEVER ENTERED: NeverReady` RESOLVED.** Live D2VP client: opened Bnet, created a game, shared stash works.
 
 **Direction (user decision):** closed Bnet investigation is **DEFERRED** — focus is now **OPEN Bnet** and the
-**Pi arm64 D2GS** (future goal). See "Session Diagnosis Progress" and Next Steps §4-§5.
+**Pi arm64 D2GS** (future goal). See "Session Diagnosis Progress" and Next Steps
+
+## Update - 2026-11-25 (Pi arm64 native GS: repo-side prep done)
+
+Continuing from the deferred direction. Repo-side, the native-GS arm64 path is now wired so a Pi
+clone can actually build the GS:
+
+- `deploy/Dockerfile` `gs-native` stage now takes `GS_NATIVE_PLATFORM` (runtime image) and
+  `GS_NATIVE_TARGET` (zigbuild `-Dtarget`) build args, both defaulting to the amd64 deploy shape that
+  CI and the live stack build (`linux/amd64` + `x86-linux-musl`). Override both for arm64:
+  `docker build -f deploy/Dockerfile --target gs-native --build-arg GS_NATIVE_PLATFORM=linux/arm64
+  --build-arg GS_NATIVE_TARGET=aarch64-linux-musl -t d2gs-native:arm64 .`
+- `apps/d2gs-native/README.md` gained "Running on arm64 (Raspberry Pi)": the runnable arm64 shape
+  today is the i386 native GS under `qemu-i386` on the arm64 host (same path as the arm64 Mac, whose
+  numbers live in `docs/PERFORMANCE.md`); the aarch64 knobs are the cross-build plumbing.
+
+**Not done here (deliberately):** the live stack on this host was not rebuilt or restarted - the
+default build is unchanged, and the running `deploy-gs-native-1` / `deploy-realmd-1` containers were
+left alone.
+
+**Next on the Pi:** bring redis + postgres up on the Pi (or point `D2GS_REDIS_ADDR` at the running
+stack), install `qemu-user-static` + restart systemd-binfmt, then run the native GS under qemu-i386
+and re-run the clientless e2e against it. §4-§5.

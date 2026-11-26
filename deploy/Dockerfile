@@ -33,6 +33,18 @@
 # Pinned to the BUILD platform, not the target: every stage below cross-compiles with -Dtarget, so
 # the toolchain never needs to match what it produces. On an arm64 developer machine that is the
 # difference between a native build and an emulated one.
+# Platform knobs for the native GS image (the `gs-native` stage). The defaults are the amd64 deploy
+# shape: a static i386 ELF — the game is i386, so its host has to be i386 — in a linux/amd64 scratch
+# runtime. An arm64 host (a Raspberry Pi) builds its own native GS by overriding both knobs:
+#
+#   docker build -f deploy/Dockerfile --target gs-native \
+#     --build-arg GS_NATIVE_PLATFORM=linux/arm64 \
+#     --build-arg GS_NATIVE_TARGET=aarch64-linux-musl \
+#     -t d2gs-native:arm64 .
+#
+# The runtime stage follows the platform the build was asked for and the ELF follows the target, so
+# the image and the binary it ships cannot drift apart.
+ARG GS_NATIVE_PLATFORM=linux/amd64
 FROM --platform=$BUILDPLATFORM alpine:3.20 AS zig
 RUN apk add --no-cache curl xz
 ARG ZIG_VERSION=0.16.0
@@ -60,6 +72,8 @@ COPY deploy/zigbuild.sh /usr/local/bin/zigbuild
 FROM zig AS build-realmd
 RUN apk add --no-cache nodejs npm
 COPY webui ./webui
+COPY apps/realmd/assets/bnserver-D2DV.ini /src/bnserver-D2DV.ini
+RUN mkdir -p /data/bnftp && cp /src/bnserver-D2DV.ini /data/bnftp/
 RUN zigbuild realmd-bin -Dtarget=x86_64-linux-musl -Doptimize=ReleaseSafe -Dwebui=true
 
 # build: d2ingress (static musl)
@@ -76,7 +90,8 @@ RUN zigbuild dlls -Doptimize=ReleaseSafe
 # The game is i386 code, so its host has to be i386 too — it is loaded into this process, not
 # launched as a child. Static musl because the runtime image below has nothing else in it.
 FROM zig AS build-native
-RUN zigbuild d2gs-native -Dtarget=x86-linux-musl -Doptimize=ReleaseSafe
+ARG GS_NATIVE_TARGET=x86-linux-musl
+RUN zigbuild d2gs-native -Dtarget=${GS_NATIVE_TARGET} -Doptimize=ReleaseSafe
 
 # fetch: minimal 1.14d game data
 # tools/make-minimal.sh assembles this from a legitimately owned install (stripped MPQs —
@@ -140,7 +155,7 @@ RUN apk add --no-cache curl && mkdir -p /gamedata && \
 # image platform against the node's and refuses a linux/386 image on an amd64 node outright ("no
 # match for platform in manifest") — while the kernel it would have run on executes the i386 binary
 # without help. The label is metadata; the ELF is what runs.
-FROM --platform=linux/amd64 scratch AS gs-native
+FROM --platform=$GS_NATIVE_PLATFORM scratch AS gs-native
 COPY --from=build-native /src/zig-out/bin/d2gs-native /d2gs-native
 # The mac minimal set, since this target loads the Mac image rather than Game.exe. A bind mount
 # at /game still overrides it with a different install if you need one.
@@ -268,6 +283,7 @@ ENTRYPOINT ["/opt/d2gs/entrypoint.sh"]
 # realmd: static binary in scratch (default target)
 FROM scratch AS realmd
 COPY --from=build-realmd /src/zig-out/bin/realmd /realmd
+COPY --from=build-realmd /src/bnserver-D2DV.ini /data/bnftp/bnserver-D2DV.ini
 # The only client-facing port: BNCS login + MCP realm, muxed as real bnet does it. 8080 is bound
 # too (health probes, admin API, web UI) but is deliberately NOT declared: it is cluster-internal
 # and never belongs on a public Service.
