@@ -142,7 +142,7 @@ spec:
             # Public IPv4 clients dial for d2cs (bnetd advertises it). Set to the realm's
             # external LoadBalancer IP.
             - name: REALMD_REALM_ADDR
-              value: "127.0.0.1"
+              value: "192.168.0.15"
             # Public IPv4 clients dial for GAME traffic — the d2ingress gateway. Required:
             # clients never reach a game server directly, since the token they present is
             # realm-global and only the gateway can translate it to the engine's game id.
