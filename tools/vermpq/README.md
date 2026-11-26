@@ -35,7 +35,9 @@ interchangeable). Also untracked: the built `ver-IX86-1.dll`, `*.signed.dll`, an
 ```
 ./gen-cert.sh                 # once: make your local blizz.{key,crt,p12}
 ./build.sh [/path/to/datadir] # build DLL -> sign -> pack -> deploy to <datadir>/bnftp/
-                              #             default datadir: /tmp/rd-live
+                              #             default: the repo's served bnftp dir
+                              #             (<repo>/deploy/apps/realmd/assets/bnftp, the dir the
+                              #             compose stack bind-mounts to /data/bnftp)
 ```
 
 Needs `osslsigncode` and StormLib (`brew install osslsigncode stormlib`).

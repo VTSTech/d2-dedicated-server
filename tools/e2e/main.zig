@@ -1857,7 +1857,7 @@ fn scNameResolution() Result {
     a.connectBnet() catch |e| return fail(name, "A {s}", .{@errorName(e)});
     a.auth() catch |e| return fail(name, "A {s}", .{@errorName(e)});
     a.login("ResolveAcctA") catch |e| return fail(name, "A {s}", .{@errorName(e)});
-    a.enterChatAs("Amazon", "TypeGuru,Amazon") catch |e| return fail(name, "A {s}", .{@errorName(e)});
+    a.enterChatAs("Amazon", "D2VP-QoL,Amazon") catch |e| return fail(name, "A {s}", .{@errorName(e)});
     a.joinChannel(channel) catch |e| return fail(name, "A {s}", .{@errorName(e)});
     a.setBnetTimeout(2000);
 
@@ -1866,7 +1866,7 @@ fn scNameResolution() Result {
     b.connectBnet() catch |e| return fail(name, "B {s}", .{@errorName(e)});
     b.auth() catch |e| return fail(name, "B {s}", .{@errorName(e)});
     b.login("ResolveAcctB") catch |e| return fail(name, "B {s}", .{@errorName(e)});
-    b.enterChatAs("Necro", "TypeGuru,Necro") catch |e| return fail(name, "B {s}", .{@errorName(e)});
+    b.enterChatAs("Necro", "D2VP-QoL,Necro") catch |e| return fail(name, "B {s}", .{@errorName(e)});
     b.joinChannel(channel) catch |e| return fail(name, "B {s}", .{@errorName(e)});
     b.setBnetTimeout(2000);
     _ = net.usleep(150_000);
@@ -2002,7 +2002,7 @@ fn scChatCommands() Result {
     a.connectBnet() catch |e| return fail(name, "A {s}", .{@errorName(e)});
     a.auth() catch |e| return fail(name, "A {s}", .{@errorName(e)});
     a.login("CmdAlice") catch |e| return fail(name, "A {s}", .{@errorName(e)});
-    a.enterChatAs("AliceChar", "TypeGuru,AliceChar") catch |e| return fail(name, "A {s}", .{@errorName(e)});
+    a.enterChatAs("AliceChar", "D2VP-QoL,AliceChar") catch |e| return fail(name, "A {s}", .{@errorName(e)});
     a.joinChannel(channel) catch |e| return fail(name, "A {s}", .{@errorName(e)});
     a.setBnetTimeout(2000);
 
@@ -2097,7 +2097,7 @@ fn scLobbyCharNames() Result {
     a.login("CharAcctA") catch |e| return fail(name, "A {s}", .{@errorName(e)});
     // What a real client asks to be known as: the bare character, and "<realm>,<character>". The realm
     // answers with Battle.net's unique name for a Diablo II user, charname*account.
-    a.enterChatAs("Sorceress", "TypeGuru,Sorceress") catch |e| return fail(name, "A {s}", .{@errorName(e)});
+    a.enterChatAs("Sorceress", "D2VP-QoL,Sorceress") catch |e| return fail(name, "A {s}", .{@errorName(e)});
     if (!std.mem.eql(u8, a.uniqueName(), "Sorceress*CharAcctA"))
         return fail(name, "ENTERCHAT unique name is '{s}', want 'Sorceress*CharAcctA'", .{a.uniqueName()});
     a.joinChannel(channel) catch |e| return fail(name, "A {s}", .{@errorName(e)});
@@ -2107,7 +2107,7 @@ fn scLobbyCharNames() Result {
     b.connectBnet() catch |e| return fail(name, "B {s}", .{@errorName(e)});
     b.auth() catch |e| return fail(name, "B {s}", .{@errorName(e)});
     b.login("CharAcctB") catch |e| return fail(name, "B {s}", .{@errorName(e)});
-    b.enterChatAs("Barbarian", "TypeGuru,Barbarian") catch |e| return fail(name, "B {s}", .{@errorName(e)});
+    b.enterChatAs("Barbarian", "D2VP-QoL,Barbarian") catch |e| return fail(name, "B {s}", .{@errorName(e)});
     b.setBnetTimeout(2000);
     b.joinChannel(channel) catch |e| return fail(name, "B {s}", .{@errorName(e)});
 
@@ -2165,13 +2165,13 @@ fn scLobbyCharNamedLikeAccount() Result {
     a.connectBnet() catch |e| return fail(name, "A {s}", .{@errorName(e)});
     a.auth() catch |e| return fail(name, "A {s}", .{@errorName(e)});
     a.login("samename") catch |e| return fail(name, "A {s}", .{@errorName(e)});
-    a.enterChatAs("Samename", "beta,Samename") catch |e| return fail(name, "A {s}", .{@errorName(e)});
+    a.enterChatAs("Samename", "D2VP-QoL,Samename") catch |e| return fail(name, "A {s}", .{@errorName(e)});
     if (!std.mem.eql(u8, a.uniqueName(), "Samename*samename"))
         return fail(name, "unique name is '{s}', want 'Samename*samename'", .{a.uniqueName()});
     a.setBnetTimeout(1500);
     a.joinChannel(channel) catch |e| return fail(name, "A {s}", .{@errorName(e)});
     const own = nextEvent(&a, rc.EID_SHOWUSER, 6) orelse return fail(name, "A is not in its own user list", .{});
-    const head = "PX2Dbeta,Samename,";
+    const head = "PX2DD2VP-QoL,Samename,";
     if (!std.mem.startsWith(u8, own.text, head))
         return fail(name, "statstring is '{s}', want PX2D + realm,character,", .{own.text});
     const blob = own.text[head.len..];
@@ -2210,7 +2210,7 @@ fn scLobbyChatEvents() Result {
     a.connectBnet() catch |e| return fail(name, "A {s}", .{@errorName(e)});
     a.auth() catch |e| return fail(name, "A {s}", .{@errorName(e)});
     a.login("EvAcctA") catch |e| return fail(name, "A {s}", .{@errorName(e)});
-    a.enterChatAs("EvSorc", "TypeGuru,EvSorc") catch |e| return fail(name, "A {s}", .{@errorName(e)});
+    a.enterChatAs("EvSorc", "D2VP-QoL,EvSorc") catch |e| return fail(name, "A {s}", .{@errorName(e)});
     if (!std.mem.eql(u8, a.uniqueName(), name_a)) return fail(name, "A's unique name is '{s}'", .{a.uniqueName()});
     a.setBnetTimeout(1500);
     a.joinChannel(channel) catch |e| return fail(name, "A {s}", .{@errorName(e)});
@@ -2220,10 +2220,10 @@ fn scLobbyChatEvents() Result {
     if (!std.mem.eql(u8, ch.text, channel)) return fail(name, "EID_CHANNEL text is '{s}', want the channel's name", .{ch.text});
     const self_a = nextEvent(&a, rc.EID_SHOWUSER, 4) orelse return fail(name, "A is not in its own user list", .{});
     if (!std.mem.eql(u8, self_a.username, name_a)) return fail(name, "A's own row is '{s}', want '{s}'", .{ self_a.username, name_a });
-    if (!std.mem.startsWith(u8, self_a.text, "PX2DTypeGuru,EvSorc,"))
+    if (!std.mem.startsWith(u8, self_a.text, "PX2DD2VP-QoL,EvSorc,"))
         return fail(name, "A's statstring is '{s}', want PX2D + realm,character,", .{self_a.text});
     // class + 1 at 13 of the blob after the second comma, level at 25
-    const blob = self_a.text["PX2DTypeGuru,EvSorc,".len..];
+    const blob = self_a.text["PX2DD2VP-QoL,EvSorc,".len..];
     if (blob.len < 28 or blob[13] != 2 or blob[25] != 33) return fail(name, "A's statstring carries class {d} level {d}, want the saved 2/33", .{ blob[13], blob[25] });
 
     var b = rc.RealmClient{};
@@ -2231,7 +2231,7 @@ fn scLobbyChatEvents() Result {
     b.connectBnet() catch |e| return fail(name, "B {s}", .{@errorName(e)});
     b.auth() catch |e| return fail(name, "B {s}", .{@errorName(e)});
     b.login("EvAcctB") catch |e| return fail(name, "B {s}", .{@errorName(e)});
-    b.enterChatAs("EvNecro", "TypeGuru,EvNecro") catch |e| return fail(name, "B {s}", .{@errorName(e)});
+    b.enterChatAs("EvNecro", "D2VP-QoL,EvNecro") catch |e| return fail(name, "B {s}", .{@errorName(e)});
     b.setBnetTimeout(1500);
     b.joinChannel(channel) catch |e| return fail(name, "B {s}", .{@errorName(e)});
 
@@ -2945,7 +2945,7 @@ fn scChatAcrossInstances() Result {
     a.connectBnet() catch |e| return fail(name, "A {s}", .{@errorName(e)});
     a.auth() catch |e| return fail(name, "A {s}", .{@errorName(e)});
     a.login("CrossAlice") catch |e| return fail(name, "A {s}", .{@errorName(e)});
-    a.enterChatAs("AliceChar", "TypeGuru,AliceChar") catch |e| return fail(name, "A {s}", .{@errorName(e)});
+    a.enterChatAs("AliceChar", "D2VP-QoL,AliceChar") catch |e| return fail(name, "A {s}", .{@errorName(e)});
     a.joinChannel(channel) catch |e| return fail(name, "A {s}", .{@errorName(e)});
     a.setBnetTimeout(3000);
 

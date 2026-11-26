@@ -35,7 +35,7 @@ const guild = @import("realm_proto").guild;
 const xsha1 = @import("libd2").bnet.xsha1;
 
 // Set by main() before serving.
-pub var realm_name: []const u8 = "TypeGuru";
+pub var realm_name: []const u8 = "D2VP-QoL";
 pub var realm_desc: []const u8 = "D2 Closed Realm";
 pub var d2cs_ip: [4]u8 = .{ 127, 0, 0, 1 };
 /// The port the realm tells clients to reach MCP on. Muxed onto BNCS, so it is the BNCS port;
@@ -1833,7 +1833,7 @@ test "a character named like its account is still named charname*account" {
     try std.testing.expect(statChar("beta") == null);
     try std.testing.expect(statChar("beta,") == null);
     try std.testing.expect(statChar("beta,a*b") == null);
-    try std.testing.expectEqualStrings("Sorc", statChar("TypeGuru,Sorc,extra").?);
+    try std.testing.expectEqualStrings("Sorc", statChar("D2VP-QoL,Sorc,extra").?);
 }
 
 test "a Diablo II user is named charname*account" {

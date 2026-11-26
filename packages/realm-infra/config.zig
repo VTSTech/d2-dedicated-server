@@ -15,7 +15,7 @@ pub const Config = struct {
     bnet_port: u16 = 6112,
 
     /// Realm advertised to clients (what bnetd hands back as the realm address).
-    realm_name: []const u8 = "TypeGuru",
+    realm_name: []const u8 = "D2VP-QoL",
     realm_addr: []const u8 = "127.0.0.1",
     /// Comma-separated realm-account names allowed into the admin API and web UI
     /// (REALMD_ADMINS). Case-insensitive. Empty = none.

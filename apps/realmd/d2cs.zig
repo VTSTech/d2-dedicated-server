@@ -1336,7 +1336,7 @@ test "a chat statstring is the character list's blob behind the product tag, wit
     var b: [128]u8 = undefined;
     var w = proto.Writer.init(&b);
     w.putBytes("PX2D");
-    w.putBytes("TypeGuru");
+    w.putBytes("D2VP-QoL");
     w.putU8(',');
     w.putBytes("Sorc");
     w.putU8(',');

@@ -155,7 +155,7 @@ docker logs deploy-realmd-1 2>&1 | tail -100
 # Look for these messages:
 # - "getfiletime 'bnserver-D2DV.ini' -> not held" (BAD - file not found)
 # - "getfiletime 'bnserver-D2DV.ini' -> mtime X" (GOOD - file found)
-# - "realm logon account=X realm=TypeGuru" (should appear)
+# - "realm logon account=X realm=D2VP-QoL" (should appear)
 # - "create account" (should work)
 # - "character list" (currently missing)
 ```

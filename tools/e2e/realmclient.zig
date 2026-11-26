@@ -222,7 +222,7 @@ pub const RealmClient = struct {
     // instance sets these explicitly.
     bnet_port: u16 = 0,
     d2cs_port: u16 = 0,
-    realm_name: []const u8 = "TypeGuru",
+    realm_name: []const u8 = "D2VP-QoL",
     /// The EXE version this client claims in SID_AUTH_CHECK — what the realm resolves an engine
     /// from. Zero is what every scenario but the version one wants: unmapped, so unconstrained.
     exe_version: u32 = 0,

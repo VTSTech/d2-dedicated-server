@@ -45,7 +45,7 @@ to it. See [`docs/redis.md`](docs/redis.md).
 | `REALMD_BNET_PORT` | 6112 | the client-facing listener |
 | `REALMD_REDIS_ADDR` | `redis:6379` | REQUIRED — sessions, games, the fleet, the live character |
 | `REALMD_PG_DSN` | -- | REQUIRED — the store of record: characters, accounts, profiles, guilds |
-| `REALMD_REALM_NAME` | `TypeGuru` | realm name shown to clients |
+| `REALMD_REALM_NAME` | `D2VP-QoL` | realm name shown to clients |
 | `REALMD_REALM_ADDR` | `127.0.0.1` | public IPv4 clients dial for the realm (advertised on login) |
 | `REALMD_GAME_ADDR` | -- | REQUIRED — the address advertised for game traffic (d2ingress, or realmd's own edge) |
 | `REALMD_GS_ADDR` | (peer IP) | override the game-server IP given to clients (NAT) |

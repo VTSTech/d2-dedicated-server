@@ -13,6 +13,10 @@ rm -f ver-IX86-1.signed.dll   # osslsigncode 2.13+ refuses to overwrite the outp
 osslsigncode sign -certs blizz.crt -key blizz.key -n CheckRevision \
   -in ver-IX86-1.dll -out ver-IX86-1.signed.dll >/dev/null 2>&1
 DYLD_LIBRARY_PATH="$SL/lib" ./make_vermpq ver-IX86-1.mpq ver-IX86-1.signed.dll "ver-IX86-1.dll"
-mkdir -p "${1:-/tmp/rd-live}/bnftp"
-cp ver-IX86-1.mpq "${1:-/tmp/rd-live}/bnftp/ver-IX86-1.mpq"
-echo "deployed ver-IX86-1.mpq to ${1:-/tmp/rd-live}/bnftp/"
+# Default deploy dir is the bnftp asset dir the compose stack bind-mounts (deploy/apps/realmd/
+# assets/bnftp -> /data/bnftp), so a bare ./build.sh lands the MPQ where the server actually
+# serves it from. Pass a dir to override (e.g. /tmp/rd-live/bnftp for ad-hoc staging).
+DEPLOY_DIR="${1:-$(cd "$(dirname "$0")/../.." && pwd)/deploy/apps/realmd/assets/bnftp}"
+mkdir -p "$DEPLOY_DIR"
+cp ver-IX86-1.mpq "$DEPLOY_DIR/ver-IX86-1.mpq"
+echo "deployed ver-IX86-1.mpq to $DEPLOY_DIR/"

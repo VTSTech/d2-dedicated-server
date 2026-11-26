@@ -30,7 +30,7 @@ const SMemAlloc: *const fn (u32, [*:0]const u8, u32, u32) callconv(.winapi) ?[*]
 // Our realm entries — all resolve to the injected realm IP (filled by apply()).
 const Gateway = struct { tz: []const u8, name: []const u8 };
 const gateways = [_]Gateway{
-    .{ .tz = "8", .name = "TypeGuru" },
+    .{ .tz = "8", .name = "D2VP-QoL" },
     .{ .tz = "6", .name = "Realm2" },
     .{ .tz = "-9", .name = "Realm3" },
     .{ .tz = "-1", .name = "Realm4" },
